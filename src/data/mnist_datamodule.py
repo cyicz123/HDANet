@@ -105,14 +105,14 @@ class MNISTDataModule(LightningDataModule):
         MNIST(self.hparams.data_dir, train=False, download=True)
 
     def setup(self, stage: Optional[str] = None) -> None:
-        """Load data. Set variables: `self.data_train`, `self.data_val`, `self.data_test`.
+        """加载数据。设置变量：`self.data_train`、`self.data_val`、`self.data_test`。
 
-        This method is called by Lightning before `trainer.fit()`, `trainer.validate()`, `trainer.test()`, and
-        `trainer.predict()`, so be careful not to execute things like random split twice! Also, it is called after
-        `self.prepare_data()` and there is a barrier in between which ensures that all the processes proceed to
-        `self.setup()` once the data is prepared and available for use.
+        该方法会在 Lightning 调用 `trainer.fit()`、`trainer.validate()`、`trainer.test()` 和
+        `trainer.predict()` 之前被调用，因此要注意不要重复执行如 random split 之类的操作！此外，该方法会在
+        `self.prepare_data()` 之后被调用，并且中间有同步屏障，确保所有进程在数据准备好后再进入
+        `self.setup()`，以便数据可用。
 
-        :param stage: The stage to setup. Either `"fit"`, `"validate"`, `"test"`, or `"predict"`. Defaults to ``None``.
+        :param stage: 设置的阶段。可以是 `"fit"`、`"validate"`、`"test"` 或 `"predict"`。默认为 ``None``。
         """
         # Divide batch size by the number of devices.
         if self.trainer is not None:

@@ -1,0 +1,20 @@
+_target_: src.data.fusion_datamodule.FusionDataModule
+data_dir: data/adca
+batch_size: 1140 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
+num_workers: 4
+pin_memory: False
+
+
+# 训练/测试索引文件
+index_file: "trainidx15rand.mat"
+# WiFi数据文件
+wifi_file: "des_maps_wifi_fz15_sigma2_bs1_sw60.mat"
+# 标签数据文件
+label_file: "gt_counts.mat"
+# 图像数据目录
+img_dir: "imgdata"
+# 数据集特定参数
+fusion_video_scheme: 3  # 融合视频数量
+video_list: [3, 5, 4, 2, 1]  # 融合视频编号加载顺序列表
+video_type_no: 3  # 视频帧预处理方式（默认3）
+video_save_names: ["orig", "roi", "crop", "fg", "fgm"]  # 视频保存名称列表 
