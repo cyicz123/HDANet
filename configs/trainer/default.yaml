@@ -2,18 +2,18 @@ _target_: lightning.pytorch.trainer.Trainer
 
 default_root_dir: ${paths.output_dir}
 
-min_epochs: 1 # prevents early stopping
-max_epochs: 10
+min_epochs: 100 # 防止过早停止
+max_epochs: 500
 
-accelerator: cpu
+accelerator: gpu
 devices: 1
 
-# mixed precision for extra speed-up
-# precision: 16
+# 混合精度训练以加速
+precision: 16
 
-# perform a validation loop every N training epochs
-check_val_every_n_epoch: 1
+# 每N个训练周期执行一次验证
+check_val_every_n_epoch: 3
 
-# set True to to ensure deterministic results
-# makes training slower but gives more reproducibility than just setting seeds
-deterministic: False
+# 设为True以确保结果确定性
+# 会降低训练速度，但比仅设置随机种子更可复现
+deterministic: True
