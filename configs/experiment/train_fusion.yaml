@@ -1,0 +1,22 @@
+# @package _global_
+
+defaults:
+  - _self_
+  - data: fusion_data.yaml
+  - model: fusion_module.yaml
+  - callbacks: default.yaml
+  - logger: many_loggers.yaml # configure logging framework
+  - trainer: gpu.yaml
+  - paths: default.yaml
+  - extras: default.yaml
+  - hydra: default.yaml
+
+task_name: "train"
+
+tags: ["dev"]
+
+# passing checkpoint path is necessary for resizing collage logger images
+#ckpt_path: ???
+
+# seed for random number generators in pytorch, numpy and python.random
+seed: 42

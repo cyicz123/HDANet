@@ -25,15 +25,14 @@ class RankedLogger(logging.LoggerAdapter):
         self.rank_zero_only = rank_zero_only
 
     def log(self, level: int, msg: str, rank: Optional[int] = None, *args, **kwargs) -> None:
-        """Delegate a log call to the underlying logger, after prefixing its message with the rank
-        of the process it's being logged from. If `'rank'` is provided, then the log will only
-        occur on that rank/process.
+        """将日志调用委托给底层 logger，在日志消息前加上当前进程的 rank 前缀。
+        如果提供了 'rank' 参数，则仅在该 rank/进程上进行日志记录。
 
-        :param level: The level to log at. Look at `logging.__init__.py` for more information.
-        :param msg: The message to log.
-        :param rank: The rank to log at.
-        :param args: Additional args to pass to the underlying logging function.
-        :param kwargs: Any additional keyword args to pass to the underlying logging function.
+        :param level: 日志级别。更多信息请参考 `logging.__init__.py`。
+        :param msg: 要记录的日志消息。
+        :param rank: 指定在哪个 rank 上记录日志。
+        :param args: 传递给底层日志函数的其他参数。
+        :param kwargs: 传递给底层日志函数的其他关键字参数。
         """
         if self.isEnabledFor(level):
             msg, kwargs = self.process(msg, kwargs)

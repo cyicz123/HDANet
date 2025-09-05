@@ -1,6 +1,6 @@
 # @package _global_
 
-# to execute this experiment run:
+# 要运行本实验，请执行：
 # python train.py experiment=example
 
 defaults:
@@ -9,8 +9,8 @@ defaults:
   - override /callbacks: default
   - override /trainer: default
 
-# all parameters below will be merged with parameters from default configurations set above
-# this allows you to overwrite only specified parameters
+# 下面的所有参数将与上面设置的默认配置参数合并
+# 这样你只需覆盖需要修改的参数即可
 
 tags: ["mnist", "simple_dense_net"]
 
