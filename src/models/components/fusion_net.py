@@ -8,7 +8,7 @@ import logging
 
 from src.models.components.detection_lenet import DetectionLeNet
 from src.models.components.detection_resnet import DetectionResNet34
-from src.utils.pylogger import RankedLogger
+from src.utils import RankedLogger
 
 
 class FusionNet(nn.Module):
@@ -41,12 +41,12 @@ class FusionNet(nn.Module):
         # 加载WiFi预训练模型
         wifi_pretrained = wifi_config.get("pretrained_path")
         if wifi_pretrained and os.path.exists(wifi_pretrained):
-            self.log.log(logging.INFO, f"Loading pretrained WiFiViT from: {wifi_pretrained}")
+            self.log.info(f"Loading pretrained WiFiViT from: {wifi_pretrained}")
             try:
                 self.lenet.load_state_dict(torch.load(wifi_pretrained, map_location="cpu"), strict=False)
-                self.log.log(logging.INFO, "WiFiViT pretrained weights loaded successfully.")
+                self.log.info("WiFiViT pretrained weights loaded successfully.")
             except Exception as e:
-                self.log.log(logging.ERROR, f"Error loading WiFiViT pretrained weights: {e}")
+                self.log.error(f"Error loading WiFiViT pretrained weights: {e}")
                 raise e
 
             # 冻结WiFi特征提取器
@@ -72,14 +72,14 @@ class FusionNet(nn.Module):
                         break
                 
                 if pretrained_path and os.path.exists(pretrained_path):
-                    self.log.log(logging.INFO, f"Loading pretrained video model for video {video_idx} from: {pretrained_path}")
+                    self.log.info(f"Loading pretrained video model for video {video_idx} from: {pretrained_path}")
                     try:
                         resnet.load_state_dict(torch.load(pretrained_path, map_location="cpu"), strict=False)
-                        self.log.log(logging.INFO, "Video model pretrained weights loaded successfully.")
+                        self.log.info("Video model pretrained weights loaded successfully.")
                     except Exception as e:
-                        self.log.log(logging.ERROR, f"Error loading video model pretrained weights: {e}")
+                        self.log.error(f"Error loading video model pretrained weights: {e}")
                 else:
-                    self.log.log(logging.WARNING, f"Pretrained video model not found for video index {video_idx}, using random weights.")
+                    self.log.warning(f"Pretrained video model not found for video index {video_idx}, using random weights.")
                 
                 # 冻结视频特征提取器
                 if video_config.get("freeze", True):
@@ -87,7 +87,7 @@ class FusionNet(nn.Module):
                         param.requires_grad = False
                 self.resnet_models.append(resnet)
         else:
-            self.log.log(logging.ERROR, "No pretrained video models provided.")
+            self.log.error("No pretrained video models provided.")
             raise ValueError("No pretrained video models provided.")
 
         # 初始化融合层
