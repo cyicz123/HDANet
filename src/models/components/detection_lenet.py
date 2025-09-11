@@ -31,12 +31,12 @@ class LeNet(nn.Module):
         x = self.maxpool1(x)
         x = self.conv2(x)
         x = self.maxpool2(x)
-        x = x.flatten(2)
+        x = x.flatten(2) # [B, 16, 700]
 
         if self.use_attention:
             x = self.tse(x)
 
-        return x
+        return x # [B, 16, 700]
 
 
 class DetectionLeNet(nn.Module):

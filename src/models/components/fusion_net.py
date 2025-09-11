@@ -130,7 +130,7 @@ class FusionNet(nn.Module):
 
             # 处理当前视频帧
             current_video_data = video_data[:, start_idx:end_idx, :, :]
-            video_feature = resnet.features(current_video_data)
+            video_feature = resnet.features(current_video_data) # [B, 512, 3, 5]
             video_feature = resnet.tse(video_feature.flatten(2).transpose(1, 2))  # [B, C, H, W] -> [B, H*W, C] -> [B, H*W, 512]
             video_feature = self.fcvideo(video_feature)
 
