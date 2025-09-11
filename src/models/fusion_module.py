@@ -47,14 +47,33 @@ class FusionLitModule(LightningModule):
 
         # metric objects for calculating MAE and MSE
         self.train_mae = MeanAbsoluteError()
-        self.val_mae = MeanAbsoluteError()
-
         self.train_mse = MeanSquaredError()
-        self.val_mse = MeanSquaredError()
-
+        
         # for averaging loss across batches
         self.train_loss = MeanSquaredError()
         self.val_loss = MeanSquaredError()
+
+        # new metrics logic for validation
+        self.is_multicam = hasattr(self.net, "video_list") 
+        if self.is_multicam:
+            self.video_list = self.net.video_list
+            num_cameras = len(self.video_list)
+            
+            val_metrics = {}
+            for i in range(num_cameras):
+                cam_id = self.video_list[i]
+                val_metrics[f"c{cam_id}_mae"] = MeanAbsoluteError()
+                val_metrics[f"c{cam_id}_mse"] = MeanSquaredError()
+            
+            val_metrics["total_mae"] = MeanAbsoluteError()
+            val_metrics["total_mse"] = MeanSquaredError()
+            
+            self.val_metrics = torch.nn.ModuleDict(val_metrics)
+        else:
+            # single camera case, use existing metrics
+            self.val_mae = MeanAbsoluteError()
+            self.val_mse = MeanSquaredError()
+
 
     def forward(self, x: Any) -> torch.Tensor:
         """Perform a forward pass through the model `self.net`.
@@ -69,8 +88,12 @@ class FusionLitModule(LightningModule):
         # 默认情况下，Lightning 会在训练开始前执行验证步骤的健全性检查，
         # 因此需要确保验证指标被重置
         self.val_loss.reset()
-        self.val_mae.reset()
-        self.val_mse.reset()
+        if self.is_multicam:
+            for metric in self.val_metrics.values():
+                metric.reset()
+        else:
+            self.val_mae.reset()
+            self.val_mse.reset()
 
     def model_step(
         self, batch: Tuple[Any, Any]
@@ -126,17 +149,37 @@ class FusionLitModule(LightningModule):
 
         # update and log metrics
         self.val_loss(preds, targets)
-        self.val_mae(preds, targets)
-        self.val_mse(preds, targets)
         self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val/mae", self.val_mae, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val/mse", self.val_mse, on_step=False, on_epoch=True, prog_bar=True)
+
+        if self.is_multicam:
+            # per-camera metrics
+            for i, cam_id in enumerate(self.video_list):
+                self.val_metrics[f"c{cam_id}_mae"].update(preds[:, i], targets[:, i])
+                self.val_metrics[f"c{cam_id}_mse"].update(preds[:, i], targets[:, i])
+
+            # total metrics
+            total_preds = torch.sum(preds, dim=1)
+            total_targets = torch.sum(targets, dim=1)
+            self.val_metrics["total_mae"].update(total_preds, total_targets)
+            self.val_metrics["total_mse"].update(total_preds, total_targets)
+
+            # log all metrics
+            self.log_dict({f"val/{k}": v for k, v in self.val_metrics.items()}, on_step=False, on_epoch=True)
+        else:  # single camera
+            self.val_mae.update(preds, targets)
+            self.val_mse.update(preds, targets)
+            self.log("val/mae", self.val_mae, on_step=False, on_epoch=True, prog_bar=True)
+            self.log("val/mse", self.val_mse, on_step=False, on_epoch=True, prog_bar=True)
 
 
     def on_validation_epoch_end(self) -> None:
         "Lightning hook that is called when a validation epoch ends."
-        mae = self.val_mae.compute()  # get current val mae
-        self.log("val/mae", mae, prog_bar=True)
+        if self.is_multicam:
+            mae = self.val_metrics["total_mae"].compute()
+            self.log("val/total_mae", mae, prog_bar=True)
+        else:
+            mae = self.val_mae.compute()  # get current val mae
+            self.log("val/mae", mae, prog_bar=True)
 
 
     def setup(self, stage: str) -> None:
