@@ -3,6 +3,7 @@ defaults:
   - early_stopping
   - model_summary
   - rich_progress_bar
+  - wdm_visualizer
   - _self_
 
 model_checkpoint:
@@ -20,3 +21,6 @@ early_stopping:
 
 model_summary:
   max_depth: -1
+
+wdm_visualizer:
+  images_num: 3

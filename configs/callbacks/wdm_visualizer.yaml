@@ -1,0 +1,5 @@
+wdm_visualizer:
+  _target_: src.callbacks.wdm_visualizer.WDMVisualizer
+  images_num: 2 # Default value, you can override this in your experiment config
+  alpha: 0.6
+  background_image_path: "data/adca/geography_map.png"
