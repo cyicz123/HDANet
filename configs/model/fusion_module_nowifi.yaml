@@ -8,11 +8,7 @@ defaults:
 # this allows you to overwrite only specified parameters
 
 net:
-  _target_: src.models.components.fusion_net.FusionNet
-  wifi_config:
-    pretrained_path: "data/adca/trained_models/wifi-lenet-self_attention.pth"
-    freeze: true
-    use_attention: true
+  _target_: src.models.components.fusion_net_nowifi.FusionNetNoWiFi
   video_config:
     pretrained_list:
       - "data/adca/trained_models/video_resnet_v1_mae2.15.pth"

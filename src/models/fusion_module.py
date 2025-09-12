@@ -57,10 +57,10 @@ class FusionLitModule(LightningModule):
         self.is_multicam = hasattr(self.net, "video_list") 
         if self.is_multicam:
             self.video_list = self.net.video_list
-            num_cameras = len(self.video_list)
+            self.num_cameras = self.net.output_size
             
             val_metrics = {}
-            for i in range(num_cameras):
+            for i in range(self.num_cameras):
                 cam_id = self.video_list[i]
                 val_metrics[f"c{cam_id}_mae"] = MeanAbsoluteError()
                 val_metrics[f"c{cam_id}_mse"] = MeanSquaredError()
@@ -153,7 +153,8 @@ class FusionLitModule(LightningModule):
 
         if self.is_multicam:
             # per-camera metrics
-            for i, cam_id in enumerate(self.video_list):
+            for i in range(self.num_cameras):
+                cam_id = self.video_list[i]
                 self.val_metrics[f"c{cam_id}_mae"].update(preds[:, i], targets[:, i])
                 self.val_metrics[f"c{cam_id}_mse"].update(preds[:, i], targets[:, i])
 

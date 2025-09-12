@@ -93,7 +93,7 @@ class FusionDataset(Dataset):
         label_path = os.path.join(self.data_dir, self.label_file)
         labels = scio.loadmat(label_path)
         labels = labels["gt_counts"].astype(np.int64)
-        self.labels = labels[idx][:,:5]
+        self.labels = labels[idx][:,:self.fusion_video_scheme]
 
 
 

@@ -1,0 +1,31 @@
+# This is a base configuration file for FusionLitModule
+# It contains shared settings like optimizer and scheduler
+
+_target_: src.models.fusion_module.FusionLitModule
+
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.0
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.SequentialLR
+  _partial_: true
+  schedulers:
+    - _target_: torch.optim.lr_scheduler.LinearLR
+      _partial_: true
+      start_factor: 0.1
+      end_factor: 1.0
+      total_iters: 5  # 5 epochs for warmup
+
+    - _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+      _partial_: true
+      # T_max should be total_epochs - warmup_epochs.
+      # For example, if total epochs is 50, T_max should be 45.
+      T_max: 495
+      eta_min: 1e-7 # Minimum learning rate
+
+  milestones: [5] # Switch schedulers after 5 epochs
+
+compile: true
