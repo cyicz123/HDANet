@@ -110,7 +110,10 @@ class FusionNetNoWiFi(nn.Module):
                 video_feature.flatten(2).transpose(1, 2)
             )  # [B, C, H, W] -> [B, H*W, C] -> [B, H*W, 512]
             video_feature = self.fcvideo(video_feature)
-            video_features_list.append(video_feature)
+            # 添加池化后的特征
+            pooled_feature = self.avgpool(video_feature.transpose(1, 2)).transpose(1, 2)
+            video_and_avg = torch.cat([video_feature, pooled_feature], 1)
+            video_features_list.append(video_and_avg)
 
         # 2. 将所有视频特征堆叠成 memory
         all_video_features = torch.cat(video_features_list, 1)
