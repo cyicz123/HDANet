@@ -1,0 +1,13 @@
+# @package _global_
+
+defaults:
+  - override /model: fusion_module_decoder
+
+task_name: "fusion_decoder"
+
+tags: ["fusion", "decoder"]
+logger.tensorboard.name: "fusion_decoder"
+
+# passing checkpoint path is necessary for resizing collage logger images
+#ckpt_path: ???
+

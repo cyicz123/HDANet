@@ -10,3 +10,4 @@ defaults:
 tags: ["fusion", "nowifi"]
   
 task_name: "fusion_nowifi"
+logger.tensorboard.name: "fusion_nowifi"

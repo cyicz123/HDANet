@@ -1,0 +1,31 @@
+_target_: src.models.fusion_module.FusionLitModule
+
+defaults:
+  - base
+  - _self_
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+net:
+  _target_: src.models.components.fusion_net.FusionNetDecoder
+  wifi_config:
+    pretrained_path: "data/adca/trained_models/wifi-lenet-self_attention.pth"
+    freeze: true
+    use_attention: true
+  video_config:
+    pretrained_list:
+      - "data/adca/trained_models/video_resnet_v1_mae2.15.pth"
+      - "data/adca/trained_models/video_resnet_v2_mae0.96.pth"
+      - "data/adca/trained_models/video_resnet_v3_mae5.67.pth"
+      - "data/adca/trained_models/video_resnet_v4_mae1.87.pth"
+      - "data/adca/trained_models/video_resnet_v5_mae3.37.pth"
+    freeze: true
+    use_attention: true
+    use_pretrained: true
+  fusion_config:
+    fusion_video_scheme: 3
+    video_indices: [3, 5, 4, 2, 1]
+    output_size: 3
+
+compile: true

@@ -4,9 +4,12 @@
 defaults:
   - override /model: fusion_module_nowifi_encoder
 
+model.optimizer.lr: 1e-4
+
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
 tags: ["fusion", "nowifi_encoder"]
   
 task_name: "fusion_nowifi_encoder"
+logger.tensorboard.name: "fusion_nowifi_encoder"
